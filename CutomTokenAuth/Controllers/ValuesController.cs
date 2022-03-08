@@ -1,18 +1,24 @@
-﻿using System;
+﻿using CutomTokenAuth.Filters;
+using CutomTokenAuth.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace CutomTokenAuth.Controllers
 {
     public class ValuesController : ApiController
     {
-        // GET api/values
-        public IEnumerable<string> Get()
+        private readonly ICustomer _customer = null;
+        public ValuesController(ICustomer customer)
         {
-            return new string[] { "value1", "value2" };
+            _customer = customer ?? throw new ArgumentNullException(nameof(customer));
+        }
+
+        [TokenAuthenticationFilter]
+        public async Task<IEnumerable<string>> Get()
+        {
+            return new string[] { "value1", "value2", await _customer.GetName() };
         }
 
         // GET api/values/5
